@@ -53,6 +53,7 @@ connect_param!(m, :MyConnector, :input1, :ShortComponent, :b)
 set_param!(m, :MyConnector, :input2, zeros(nsteps))
 connect_param!(m, :LongComponent, :x, :MyConnector, :output)
 
+@info "Run model1"
 run(m)
 
 b = m[:ShortComponent, :b]
@@ -82,18 +83,21 @@ b = getdataframe(m, :ShortComponent, :b)
 #-------------------------------------
 
 model2 = Model()
-set_dimension!(model2, :time, 2000:2010)
+years = 2000:2010
+nsteps = length(years)
+set_dimension!(model2, :time, years)
 add_comp!(model2, ShortComponent; first=2005)
 add_comp!(model2, LongComponent)
 
 set_param!(model2, :ShortComponent, :a, 2.)
 set_param!(model2, :LongComponent, :y, 1.)
-connect_param!(model2, :LongComponent, :x, :ShortComponent, :b, zeros(11))
+connect_param!(model2, :LongComponent, :x, :ShortComponent, :b, zeros(nsteps))
 
+@info "Run model2"
 run(model2)
 
-@test length(model2[:ShortComponent, :b]) == 6
-@test length(model2[:LongComponent, :z]) == 11
+@test length(model2[:ShortComponent, :b]) == nsteps # length(2005:2010)
+@test length(model2[:LongComponent, :z]) == nsteps
 @test length(components(model2.mi)) == 2
 
 #-------------------------------------
@@ -101,18 +105,21 @@ run(model2)
 #-------------------------------------
 
 model3 = Model()
-set_dimension!(model3, :time, 2000:2010)
+years = 2000:2010
+nsteps = length(years)
+set_dimension!(model3, :time, years)
 add_comp!(model3, ShortComponent; last=2005)
 add_comp!(model3, LongComponent)
 
 set_param!(model3, :ShortComponent, :a, 2.)
 set_param!(model3, :LongComponent, :y, 1.)
-connect_param!(model3, :LongComponent, :x, :ShortComponent, :b, zeros(11))
+connect_param!(model3, :LongComponent, :x, :ShortComponent, :b, zeros(nsteps))
 
+@info "Run model3"
 run(model3)
 
-@test length(model3[:ShortComponent, :b]) == 6
-@test length(model3[:LongComponent, :z]) == 11
+@test length(model3[:ShortComponent, :b]) == nsteps # length(2005:2010)
+@test length(model3[:LongComponent, :z]) == nsteps
 @test length(components(model3.mi)) == 2
 
 b2 = getdataframe(model3, :ShortComponent, :b)
@@ -159,6 +166,7 @@ add_comp!(model4, Long)
 set_param!(model4, :Short, :a, [1,2,3])
 connect_param!(model4, :Long, :x, :Short, :b, zeros(21,3))
 
+@info "Run model4"
 run(model4)
 
 @test size(model4[:Short, :b]) == (17, 3)
@@ -181,6 +189,7 @@ add_comp!(model5, Long)
 set_param!(model5, :Short, :a, [1,2,3])
 connect_param!(model5, :Long=>:x, :Short=>:b, zeros(21,3))
 
+@info "Run model5"
 run(model5)
 
 @test size(model5[:Short, :b]) == (11, 3)

@@ -74,7 +74,7 @@ function Base.:-(ts::FixedTimestep{FIRST, STEP, LAST}, val::Int) where {FIRST, S
 	if is_first(ts)
 		error("Cannot get previous timestep, this is first timestep.")
 	elseif ts.t - val <= 0
-		error("Cannot get requested timestep, preceeds first timestep.")		
+		error("Cannot get requested timestep, precedes first timestep.")		
 	end
 	return FixedTimestep{FIRST, STEP, LAST}(ts.t - val)
 end
@@ -83,7 +83,7 @@ function Base.:-(ts::VariableTimestep{TIMES}, val::Int) where {TIMES}
 	if is_first(ts)
 		error("Cannot get previous timestep, this is first timestep.")
 	elseif ts.t - val <= 0
-		error("Cannot get requested timestep, preceeds first timestep.")		
+		error("Cannot get requested timestep, precedes first timestep.")		
 	end
 	return VariableTimestep{TIMES}(ts.t - val)
 end
@@ -174,9 +174,11 @@ function Base.getindex(v::TimestepVector{VariableTimestep{TIMES}, T}, ts::Variab
 	return v.data[ts.t]
 end
 
-function Base.getindex(v::TimestepVector{FixedTimestep{D_FIRST, STEP}, T}, ts::FixedTimestep{T_FIRST, STEP, LAST}) where {T, D_FIRST, T_FIRST, STEP, LAST} 
-	t = Int(ts.t + (T_FIRST - D_FIRST) / STEP)
-	return v.data[t]
+function Base.getindex(v::TimestepVector{FixedTimestep{V_FIRST, STEP}, T}, ts::FixedTimestep{T_FIRST, STEP, LAST}) where {T, V_FIRST, T_FIRST, STEP, LAST}
+	# @info "getindex: T_FIRST: $T_FIRST, V_FIRST: $V_FIRST, ((T_FIRST - V_FIRST) / STEP): $((T_FIRST - V_FIRST) / STEP)"
+	# t = Int(ts.t + (T_FIRST - V_FIRST) / STEP)
+	# return v.data[t]
+	return v.data[ts.t]
 end
 
 function Base.getindex(v::TimestepVector{VariableTimestep{D_FIRST}, T}, ts::VariableTimestep{T_FIRST}) where {T, D_FIRST, T_FIRST}

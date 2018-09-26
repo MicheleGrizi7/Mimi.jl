@@ -54,16 +54,17 @@ function _instantiate_datum(md::ModelDef, def::DatumDef, first::Int)
     return value
 end
 
-function _vars_NT_type(md::ModelDef, comp_def::ComponentDef)
-    var_defs = variables(comp_def)    
-    vnames = Tuple([name(vdef) for vdef in var_defs])
+# Deprecated?
+# function _vars_NT_type(md::ModelDef, comp_def::ComponentDef)
+#     var_defs = variables(comp_def)    
+#     vnames = Tuple([name(vdef) for vdef in var_defs])
     
-    first = comp_def.first
-    vtypes = Tuple{[_instance_datatype(md, vdef, first) for vdef in var_defs]...}
+#     first = comp_def.first
+#     vtypes = Tuple{[_instance_datatype(md, vdef, first) for vdef in var_defs]...}
 
-    NT = NamedTuple{vnames, vtypes}
-    return NT
-end
+#     NT = NamedTuple{vnames, vtypes}
+#     return NT
+# end
 
 """
     _instantiate_component_vars(md::ModelDef, comp_def::ComponentDef)
@@ -145,7 +146,7 @@ function build(md::ModelDef)
     # Connect each :input2 to its associated backup value.
     for (i, backup) in enumerate(md.backups)
         comp_name = connector_comp_name(i)
-        param = external_param(md, backups)
+        param = external_param(md, backup)
 
         par_values = par_dict[comp_name]
         par_values[:input2] = param isa ScalarModelParameter ? param : value(param)
