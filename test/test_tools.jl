@@ -2,17 +2,26 @@ module TestTools
 
 using Test
 using Mimi
+using Logging
 
 import Mimi:
-    getproperty, reset_compdefs
+    getproperty, reset_compdefs, prettify, log_info, log_debug
+
+log_info()
+
+old = log_debug()
+@test old.min_level == Logging.Info   # prev. level
+
+old = log_info()
+@test old.min_level == Logging.Debug
 
 reset_compdefs()
 
 #utils: prettify
-@test Mimi.prettify("camelCaseBasic") == Mimi.prettify(:camelCaseBasic) == "Camel Case Basic"
-@test Mimi.prettify("camelWithAOneLetterWord") == Mimi.prettify(:camelWithAOneLetterWord) == "Camel With A One Letter Word"
-@test Mimi.prettify("snake_case_basic") == Mimi.prettify(:snake_case_basic) == "Snake Case Basic"
-@test Mimi.prettify("_snake__case__weird_") == Mimi.prettify(:_snake__case__weird_) == "Snake Case Weird"
+@test prettify("camelCaseBasic") == prettify(:camelCaseBasic) == "Camel Case Basic"
+@test prettify("camelWithAOneLetterWord") == prettify(:camelWithAOneLetterWord) == "Camel With A One Letter Word"
+@test prettify("snake_case_basic") == prettify(:snake_case_basic) == "Snake Case Basic"
+@test prettify("_snake__case__weird_") == prettify(:_snake__case__weird_) == "Snake Case Weird"
 
 #utils: interpolate
 stepsize = 2       # N.B. ERROR: cannot assign variable Base.step from module Main
